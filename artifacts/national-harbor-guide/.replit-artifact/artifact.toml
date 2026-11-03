@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "National Harbor Guide"
+description = "A compact, mobile-friendly guide to National Harbor, Maryland, with local food, quick facts, state leadership, the state bird, and an interactive likes list."
+version = "1.0.0"
+id = "artifacts/national-harbor-guide"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 23328
+
+[services.development]
+run = "sh -c 'SITE_DIR=\"$PWD\"; if [ ! -f \"$SITE_DIR/index.html\" ]; then SITE_DIR=\"$SITE_DIR/artifacts/national-harbor-guide\"; fi; python3 -m http.server \"$PORT\" --bind 0.0.0.0 --directory \"$SITE_DIR\"'"
+
+[services.production]
+build = [ "sh", "-c", "SITE_DIR=\"$PWD\"; if [ ! -f \"$SITE_DIR/index.html\" ]; then SITE_DIR=\"$SITE_DIR/artifacts/national-harbor-guide\"; fi; mkdir -p \"$SITE_DIR/dist/public\" && cp \"$SITE_DIR/index.html\" \"$SITE_DIR/style.css\" \"$SITE_DIR/script.js\" \"$SITE_DIR/dist/public/\" && cp -R \"$SITE_DIR/images\" \"$SITE_DIR/dist/public/\"" ]
+serve = "static"
+publicDir = "artifacts/national-harbor-guide/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "23328"
+BASE_PATH = "/"
