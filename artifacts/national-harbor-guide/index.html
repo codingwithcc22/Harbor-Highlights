@@ -3,25 +3,37 @@
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="theme-color" content="#f4f0e6">
+    <meta name="theme-color" content="#171615">
     <meta name="description" content="A pocket guide to the food, waterfront character, and little details of National Harbor, Maryland.">
     <title>National Harbor, Maryland — A Pocket Guide</title>
     <link rel="icon" href="data:,">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="./style.css">
     <script src="./script.js" defer></script>
   </head>
   <body>
     <a class="skip-link" href="#main">Skip to the guide</a>
+    <div class="announcement-bar">
+      <span>THE POTOMAC, IN ITS BEST LIGHT</span>
+      <span>DISCOVER NATIONAL HARBOR <b aria-hidden="true">↗</b></span>
+    </div>
     <header class="topbar">
+      <a class="header-side" href="#food">THE HARBOR EDIT</a>
       <a class="wordmark" href="#top" aria-label="National Harbor guide home">
-        <span class="mark" aria-hidden="true">NH</span>
-        <span>Field notes <span class="wordmark-light">/ Maryland</span></span>
+        <span class="wordmark-title">National Harbor</span>
+        <span class="wordmark-light">MARYLAND · THE POTOMAC</span>
       </a>
-      <a class="top-link" href="#facts">A few things to know <span aria-hidden="true">↘</span></a>
+      <a class="top-link" href="#facts">EXPLORE <span aria-hidden="true">↘</span></a>
     </header>
+    <nav class="main-nav" aria-label="Main navigation">
+      <a href="#food">FOOD</a>
+      <a href="#facts">QUICK FACTS</a>
+      <a href="#leader">LEADER</a>
+      <a href="#state-bird">STATE BIRD</a>
+      <a href="#likes">THINGS I LIKE</a>
+    </nav>
 
     <main id="main">
       <section class="hero" id="top" aria-labelledby="hero-title">
@@ -32,25 +44,11 @@
           <a class="hero-cta" href="#food">Start with something good <span aria-hidden="true">↓</span></a>
           <p class="coordinates">38° 46′ N&nbsp; / &nbsp;77° 01′ W</p>
         </div>
-        <div class="hero-art" aria-label="Illustrated view of the Potomac waterfront">
-          <div class="sun-disc"></div>
-          <div class="waterline waterline-one"></div>
-          <div class="waterline waterline-two"></div>
-          <div class="waterline waterline-three"></div>
-          <div class="pier pier-left"></div>
-          <div class="pier pier-right"></div>
-          <div class="ferris-wheel" aria-hidden="true">
-            <span class="wheel-spoke spoke-a"></span><span class="wheel-spoke spoke-b"></span>
-            <span class="wheel-spoke spoke-c"></span><span class="wheel-spoke spoke-d"></span>
-            <span class="wheel-spoke spoke-e"></span><span class="wheel-spoke spoke-f"></span>
-            <span class="wheel-center"></span>
-          </div>
-          <div class="shore-buildings" aria-hidden="true">
-            <i></i><i></i><i></i><i></i><i></i><i></i><i></i>
-          </div>
-          <span class="art-caption">A little room to linger</span>
-          <span class="art-index">01 — 04</span>
-        </div>
+        <figure class="hero-art">
+          <img class="hero-image" src="./images/national-harbor-waterfront.jpg" alt="National Harbor's waterfront and Capital Wheel glowing at dusk">
+          <figcaption class="art-caption">A little room to linger</figcaption>
+          <span class="art-index" aria-hidden="true">01 — 04</span>
+        </figure>
         <div class="hero-footer"><span>GOOD DAYS, BY THE RIVER</span><span>SCROLL TO WANDER&nbsp; ↓</span></div>
       </section>
 
@@ -93,7 +91,7 @@
             <li><span class="fact-index">B</span><span class="fact-label">Population <small>2020 Census</small></span><span class="fact-value">5,509</span></li>
             <li><span class="fact-index">C</span><span class="fact-label">Maryland became a state</span><span class="fact-value">1788</span></li>
           </ul>
-          <div class="leader-note">
+          <div class="leader-note" id="leader">
             <span class="leader-icon" aria-hidden="true">MD</span>
             <div><p class="section-tag">LEADER</p><p>Wes Moore, Governor of Maryland</p></div>
             <span class="leader-arrow" aria-hidden="true">↗</span>
@@ -101,7 +99,7 @@
         </div>
       </section>
 
-      <section class="bird-section" aria-labelledby="bird-title">
+      <section class="bird-section" id="state-bird" aria-labelledby="bird-title">
         <div class="bird-copy">
           <p class="section-tag">03 &nbsp; / &nbsp; A LITTLE STATE PRIDE</p>
           <h2 id="bird-title">Small bird.<br><em>Big Maryland</em><br>energy.</h2>
@@ -118,7 +116,7 @@
         </div>
       </section>
 
-      <section class="like-section" aria-labelledby="like-title">
+      <section class="like-section" id="likes" aria-labelledby="like-title">
         <div class="like-topline"><span class="section-tag">04 &nbsp; / &nbsp; YOUR TURN</span><span class="handwritten">Make it yours</span></div>
         <div class="like-layout">
           <div>
