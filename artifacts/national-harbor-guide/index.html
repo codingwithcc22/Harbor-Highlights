@@ -33,6 +33,7 @@
       <a href="#leader">LEADER</a>
       <a href="#state-bird">STATE BIRD</a>
       <a href="#likes">THINGS I LIKE</a>
+      <a href="#city-guide">CITY GUIDE</a>
     </nav>
 
     <main id="main">
@@ -133,6 +134,84 @@
             <ul class="likes-list" id="likesList" aria-live="polite" aria-relevant="additions"></ul>
             <p class="empty-note" id="emptyNote">Your list is waiting for its first good thing.</p>
           </div>
+        </div>
+      </section>
+
+      <section class="city-chat-section" id="city-guide" aria-labelledby="city-guide-title">
+        <div class="city-chat-heading">
+          <div>
+            <p class="section-tag">05 &nbsp; / &nbsp; YOUR LOCAL LINE</p>
+            <h2 id="city-guide-title">Ask the<br><em>Harbor guide.</em></h2>
+            <p class="city-chat-intro">A little local perspective on food, the waterfront, and Maryland life. Ask away, neighbor.</p>
+          </div>
+          <p class="chat-badge">NATIONAL HARBOR<br>MARYLAND · THE POTOMAC</p>
+        </div>
+
+        <div class="city-chat-grid">
+          <section class="chat-card" aria-label="Chat with the National Harbor guide">
+            <div class="chat-card-heading">
+              <div>
+                <p class="section-tag">THE HARBOR GUIDE</p>
+                <p class="chat-card-subtitle">A local answer, one question at a time.</p>
+              </div>
+              <button class="clear-chat" id="clearChat" type="button">Clear chat</button>
+            </div>
+
+            <div class="chat-messages" id="chatMessages" aria-live="polite" aria-relevant="additions">
+              <article class="chat-message assistant">
+                <span class="message-speaker">YOUR LOCAL GUIDE</span>
+                <p>Hey, neighbor. Looking for a first bite? Maryland crab cakes are a fine place to start. What would you like to know about the Harbor?</p>
+              </article>
+            </div>
+
+            <form class="chat-form" id="chatForm">
+              <label class="visually-hidden" for="chatInput">Ask the National Harbor guide a question</label>
+              <input id="chatInput" name="message" type="text" maxlength="2000" placeholder="What should I eat first?" autocomplete="off">
+              <button id="sendChat" type="submit">Ask <span aria-hidden="true">↑</span></button>
+            </form>
+            <p class="chat-privacy">Please don’t share personal details. Your chat stays in this page and isn’t saved.</p>
+            <p class="chat-status" id="chatStatus" role="status" aria-live="polite"></p>
+          </section>
+
+          <aside class="prompt-lab" aria-labelledby="prompt-lab-title">
+            <div class="prompt-lab-heading">
+              <p class="section-tag">TUNE THE REPLIES</p>
+              <h3 id="prompt-lab-title">Prompt Lab</h3>
+              <p>Adjust how the guide responds. These settings apply to your next question.</p>
+            </div>
+
+            <div class="prompt-control">
+              <div class="prompt-control-label">
+                <label for="temperatureRange">Temperature</label>
+                <output id="temperatureValue" for="temperatureRange">1.0</output>
+              </div>
+              <input id="temperatureRange" type="range" min="0" max="2" step="0.1" value="1">
+              <div class="range-ends"><span>Steady</span><span>More variety</span></div>
+            </div>
+
+            <div class="prompt-control">
+              <div class="prompt-control-label">
+                <label for="maxTokensRange">Max output tokens</label>
+                <output id="maxTokensValue" for="maxTokensRange">300</output>
+              </div>
+              <input id="maxTokensRange" type="range" min="32" max="1024" step="1" value="300">
+              <div class="range-ends"><span>32</span><span>1,024</span></div>
+            </div>
+
+            <div class="prompt-control">
+              <div class="prompt-control-label">
+                <label for="topPRange">Top-p</label>
+                <output id="topPValue" for="topPRange">0.95</output>
+              </div>
+              <input id="topPRange" type="range" min="0" max="1" step="0.01" value="0.95">
+              <div class="range-ends"><span>Focused</span><span>Broader</span></div>
+            </div>
+
+            <details class="system-prompt-details">
+              <summary>Show system prompt</summary>
+              <pre id="systemPromptText">Loading the city guide’s instructions…</pre>
+            </details>
+          </aside>
         </div>
       </section>
     </main>

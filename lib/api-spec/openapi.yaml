@@ -24,6 +24,54 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+  /chat/system-prompt:
+    get:
+      operationId: getCityGuideSystemPrompt
+      tags: [city-guide]
+      summary: Get the city guide system prompt
+      responses:
+        "200":
+          description: The system prompt used by the National Harbor guide
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CityGuideSystemPrompt"
+  /chat:
+    post:
+      operationId: sendCityGuideMessage
+      tags: [city-guide]
+      summary: Ask the National Harbor city guide
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CityGuideChatInput"
+      responses:
+        "200":
+          description: The generated city guide reply and usage details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CityGuideChatResponse"
+        "400":
+          description: The request body is invalid
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "502":
+          description: The model request failed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "503":
+          description: The Gemini API key is not configured
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
 components:
   schemas:
     HealthStatus:
@@ -33,4 +81,100 @@ components:
           type: string
       required:
         - status
+    CityGuideSystemPrompt:
+      type: object
+      properties:
+        prompt:
+          type: string
+      required: [prompt]
+    CityGuideChatInput:
+      type: object
+      properties:
+        message:
+          type: string
+          minLength: 1
+          maxLength: 2000
+        history:
+          type: array
+          maxItems: 20
+          items:
+            $ref: "#/components/schemas/CityGuideChatMessage"
+        settings:
+          $ref: "#/components/schemas/CityGuideSettingsInput"
+      required: [message]
+    CityGuideChatMessage:
+      type: object
+      properties:
+        role:
+          type: string
+          enum: [user, assistant]
+        content:
+          type: string
+          minLength: 1
+          maxLength: 2000
+      required: [role, content]
+    CityGuideSettingsInput:
+      type: object
+      properties:
+        temperature:
+          type: number
+          minimum: 0
+          maximum: 2
+        topP:
+          type: number
+          minimum: 0
+          maximum: 1
+        maxOutputTokens:
+          type: integer
+          minimum: 32
+          maximum: 1024
+    CityGuideChatSettings:
+      type: object
+      properties:
+        temperature:
+          type: number
+          minimum: 0
+          maximum: 2
+        topP:
+          type: number
+          minimum: 0
+          maximum: 1
+        maxOutputTokens:
+          type: integer
+          minimum: 32
+          maximum: 1024
+      required: [temperature, topP, maxOutputTokens]
+    CityGuideUsage:
+      type: object
+      properties:
+        promptTokenCount:
+          type: integer
+          minimum: 0
+        candidatesTokenCount:
+          type: integer
+          minimum: 0
+        totalTokenCount:
+          type: integer
+          minimum: 0
+      required: [promptTokenCount, candidatesTokenCount, totalTokenCount]
+    CityGuideChatResponse:
+      type: object
+      properties:
+        reply:
+          type: string
+        usage:
+          $ref: "#/components/schemas/CityGuideUsage"
+        settings:
+          $ref: "#/components/schemas/CityGuideChatSettings"
+        model:
+          type: string
+        truncated:
+          type: boolean
+      required: [reply, usage, settings, model, truncated]
+    ApiError:
+      type: object
+      properties:
+        error:
+          type: string
+      required: [error]
 
