@@ -14,6 +14,18 @@ import {
 const router: IRouter = Router();
 const DEFAULT_MODEL = "gemini-3.8-flash";
 
+function getProviderStatus(error: unknown): number | undefined {
+  if (
+    typeof error === "object" &&
+    error !== null &&
+    "status" in error &&
+    typeof error.status === "number"
+  ) {
+    return error.status;
+  }
+  return undefined;
+}
+
 router.get("/chat/system-prompt", (_req, res): void => {
   res.json(
     GetCityGuideSystemPromptResponse.parse({
@@ -66,7 +78,8 @@ router.post("/chat", async (req, res): Promise<void> => {
 
   try {
     const ai = new GoogleGenAI({ apiKey });
-    const response = await ai.models.generateContent({
+    const generateResponse = () =>
+      ai.models.generateContent({
       model,
       contents: [
         ...history.map((entry) => ({
@@ -82,6 +95,11 @@ router.post("/chat", async (req, res): Promise<void> => {
         maxOutputTokens: settings.maxOutputTokens,
         thinkingConfig: { thinkingLevel: ThinkingLevel.LOW },
       },
+    });
+    const response = await generateResponse().catch(async (error: unknown) => {
+      if (getProviderStatus(error) !== 503) throw error;
+      await new Promise((resolve) => setTimeout(resolve, 500));
+      return generateResponse();
     });
 
     const candidate = response.candidates?.[0];
@@ -106,13 +124,7 @@ router.post("/chat", async (req, res): Promise<void> => {
     );
   } catch (error) {
     // Avoid logging provider messages because they can contain request details.
-    const providerStatus =
-      typeof error === "object" &&
-      error !== null &&
-      "status" in error &&
-      typeof error.status === "number"
-        ? error.status
-        : undefined;
+    const providerStatus = getProviderStatus(error);
     req.log.error(
       {
         errorType: error instanceof Error ? error.name : "UnknownError",
@@ -128,6 +140,8 @@ router.post("/chat", async (req, res): Promise<void> => {
           ? "Gemini rejected the API key. Check the GEMINI_API_KEY secret."
           : providerStatus === 429
             ? "The city guide is busy right now. Please try again shortly."
+            : providerStatus === 503
+              ? "Gemini is temporarily unavailable. Please try again shortly."
             : "The city guide could not reach Gemini. Please try again.";
     res.status(502).json({ error: errorMessage });
   }

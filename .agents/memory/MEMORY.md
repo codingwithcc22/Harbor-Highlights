@@ -1,0 +1,1 @@
+- [Gemini direct API behavior](gemini-direct-api-behavior.md) — Current key works with Gemini 3.8 Flash; keep thinking level low to preserve answer tokens.
