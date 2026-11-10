@@ -305,6 +305,12 @@ function createDishPhotoCard(photo) {
     content.appendChild(caption);
   }
 
+  if (photo.inspectorNote) {
+    const note = document.createElement("small");
+    note.textContent = photo.inspectorNote;
+    content.appendChild(note);
+  }
+
   card.appendChild(content);
   return card;
 }
@@ -456,6 +462,12 @@ if (
       const data = await response.json();
 
       if (!response.ok) {
+        if (response.status === 422) {
+          throw new Error(
+            [data.error, data.reason].filter(Boolean).join(" ") ||
+              "Only crab cake photos can be uploaded!",
+          );
+        }
         throw new Error(data.error || "The photo could not be saved. Please try again.");
       }
 

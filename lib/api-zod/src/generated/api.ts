@@ -24,6 +24,7 @@ export const ListDishPhotosResponseItem = zod.object({
   "id": zod.number().int(),
   "title": zod.string(),
   "caption": zod.string(),
+  "inspectorNote": zod.string().nullable(),
   "imageUrl": zod.string(),
   "createdAt": zod.coerce.date()
 })
@@ -51,6 +52,7 @@ export const UploadDishPhotoResponse = zod.object({
   "id": zod.number().int(),
   "title": zod.string(),
   "caption": zod.string(),
+  "inspectorNote": zod.string().nullable(),
   "imageUrl": zod.string(),
   "createdAt": zod.coerce.date()
 })

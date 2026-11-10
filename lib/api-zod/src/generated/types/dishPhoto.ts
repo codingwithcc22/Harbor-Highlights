@@ -10,6 +10,8 @@ export interface DishPhoto {
   id: number;
   title: string;
   caption: string;
+  /** @nullable */
+  inspectorNote: string | null;
   imageUrl: string;
   createdAt: Date;
 }

@@ -15,6 +15,7 @@ export * from './cityGuideChatSettings';
 export * from './cityGuideSettingsInput';
 export * from './cityGuideSystemPrompt';
 export * from './cityGuideUsage';
+export * from './dishInspectionError';
 export * from './dishPhoto';
 export * from './dishPhotoInput';
 export * from './healthStatus';

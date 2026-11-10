@@ -73,6 +73,18 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ApiError"
+        "422":
+          description: The inspector did not approve the dish photo
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DishInspectionError"
+        "502":
+          description: The dish inspector is temporarily unavailable
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
   /dishes/{id}/image:
     get:
       operationId: getDishPhotoImage
@@ -173,12 +185,22 @@ components:
           type: string
         caption:
           type: string
+        inspectorNote:
+          type: [string, "null"]
         imageUrl:
           type: string
         createdAt:
           type: string
           format: date-time
-      required: [id, title, caption, imageUrl, createdAt]
+      required: [id, title, caption, inspectorNote, imageUrl, createdAt]
+    DishInspectionError:
+      type: object
+      properties:
+        error:
+          type: string
+        reason:
+          type: string
+      required: [error, reason]
     DishPhotoInput:
       type: object
       properties:

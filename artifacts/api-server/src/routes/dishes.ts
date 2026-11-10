@@ -7,6 +7,7 @@ import {
 import { db, dishPhotosTable } from "@workspace/db";
 import { desc, eq } from "drizzle-orm";
 import { Router, type IRouter } from "express";
+import { inspectDish } from "../agents/dishInspector";
 
 const router: IRouter = Router();
 const MAX_IMAGE_BYTES = 3 * 1024 * 1024;
@@ -84,12 +85,14 @@ function toDishPhotoResponse(item: {
   id: number;
   title: string;
   caption: string;
+  inspectorNote: string | null;
   createdAt: Date;
 }) {
   return {
     id: item.id,
     title: item.title,
     caption: item.caption,
+    inspectorNote: item.inspectorNote,
     imageUrl: `/api/dishes/${item.id}/image`,
     createdAt: item.createdAt.toISOString(),
   };
@@ -102,6 +105,7 @@ router.get("/dishes", async (req, res): Promise<void> => {
         id: dishPhotosTable.id,
         title: dishPhotosTable.title,
         caption: dishPhotosTable.caption,
+        inspectorNote: dishPhotosTable.inspectorNote,
         createdAt: dishPhotosTable.createdAt,
       })
       .from(dishPhotosTable)
@@ -138,6 +142,27 @@ router.post("/dishes", async (req, res): Promise<void> => {
     return;
   }
 
+  // Do not insert anything unless the inspector explicitly approves the photo.
+  let inspection: Awaited<ReturnType<typeof inspectDish>>;
+  try {
+    inspection = await inspectDish(image);
+  } catch (error) {
+    // Never log the image, API key, or raw provider error message.
+    req.log.error(
+      { errorType: error instanceof Error ? error.name : "UnknownError" },
+      "Dish inspector request failed",
+    );
+    res.status(502).json({
+      error: "The inspector is on break. Try again in a minute.",
+    });
+    return;
+  }
+
+  if (!inspection.approved) {
+    res.status(422).json({ error: inspection.error, reason: inspection.reason });
+    return;
+  }
+
   try {
     const [saved] = await db
       .insert(dishPhotosTable)
@@ -146,11 +171,13 @@ router.post("/dishes", async (req, res): Promise<void> => {
         caption: parsed.data.caption?.trim() || "",
         mimeType: image.mimeType,
         imageBase64: image.base64,
+        inspectorNote: inspection.note,
       })
       .returning({
         id: dishPhotosTable.id,
         title: dishPhotosTable.title,
         caption: dishPhotosTable.caption,
+        inspectorNote: dishPhotosTable.inspectorNote,
         createdAt: dishPhotosTable.createdAt,
       });
 

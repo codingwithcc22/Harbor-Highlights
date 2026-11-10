@@ -24,6 +24,7 @@ import type {
   CityGuideChatInput,
   CityGuideChatResponse,
   CityGuideSystemPrompt,
+  DishInspectionError,
   DishPhoto,
   DishPhotoInput,
   HealthStatus
@@ -253,7 +254,7 @@ return customFetch<DishPhoto>(getUploadDishPhotoUrl(),
 
 export const getUploadDishPhotoMutationKey = () => ['uploadDishPhoto'] as const;
 
-export const getUploadDishPhotoMutationOptions = <TError = ErrorType<ApiError>,
+export const getUploadDishPhotoMutationOptions = <TError = ErrorType<ApiError | DishInspectionError>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof uploadDishPhoto>>, TError,UploadDishPhotoMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
 ): UseMutationOptions<Awaited<ReturnType<typeof uploadDishPhoto>>, TError,UploadDishPhotoMutationVariables, TContext> => {
 
@@ -282,13 +283,13 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
     export type UploadDishPhotoMutationResult = NonNullable<Awaited<ReturnType<typeof uploadDishPhoto>>>
     export type UploadDishPhotoMutationBody = BodyType<DishPhotoInput>
-    export type UploadDishPhotoMutationError = ErrorType<ApiError>
+    export type UploadDishPhotoMutationError = ErrorType<ApiError | DishInspectionError>
     export type UploadDishPhotoMutationVariables = {data: BodyType<DishPhotoInput>}
 
     /**
  * @summary Upload a National Harbor dish photo
  */
-export const useUploadDishPhoto = <TError = ErrorType<ApiError>,
+export const useUploadDishPhoto = <TError = ErrorType<ApiError | DishInspectionError>,
     TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof uploadDishPhoto>>, TError,UploadDishPhotoMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
  ): UseMutationResult<
         Awaited<ReturnType<typeof uploadDishPhoto>>,

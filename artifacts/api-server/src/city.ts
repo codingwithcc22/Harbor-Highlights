@@ -35,3 +35,13 @@ export type ChatSettings = {
   topP: number;
   maxOutputTokens: number;
 };
+
+// Shared visual criteria for the dish-photo inspector (separate from chat).
+export const CITY_DISH = {
+  name: "Maryland crab cakes",
+  shortName: "crab cakes",
+  looksLike:
+    "A golden pan-fried or broiled patty of lump crab meat, with light breading or none, often served with a lemon wedge and tartar or remoulade sauce, usually photographed on a plate.",
+  notTheDish:
+    "Crab legs or whole crabs; other seafood such as shrimp or fish; other fried foods such as chicken tenders or hush puppies; non-food photos, people, pets, screenshots, or drawings.",
+} as const;

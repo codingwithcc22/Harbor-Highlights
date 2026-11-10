@@ -13,8 +13,15 @@ export interface DishPhoto {
   id: number;
   title: string;
   caption: string;
+  /** @nullable */
+  inspectorNote: string | null;
   imageUrl: string;
   createdAt: string;
+}
+
+export interface DishInspectionError {
+  error: string;
+  reason: string;
 }
 
 export interface DishPhotoInput {
