@@ -2,6 +2,7 @@ import app from "./app";
 import { runMigrations } from "@workspace/db";
 import { logger } from "./lib/logger";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 
 const rawPort = process.env["PORT"];
 
@@ -18,10 +19,14 @@ if (Number.isNaN(port) || port <= 0) {
 }
 
 try {
-  // The API bundle runs from the workspace root, where committed migrations live.
-  await runMigrations(path.resolve(process.cwd(), "lib/db/migrations"));
+  // Resolve from the bundled entry file so dev and production share the same path.
+  const migrationsFolder = path.resolve(
+    path.dirname(fileURLToPath(import.meta.url)),
+    "../../../lib/db/migrations",
+  );
+  await runMigrations(migrationsFolder);
 } catch (error) {
-  logger.error({ error }, "Failed to apply database migrations");
+  logger.error({ err: error }, "Failed to apply database migrations");
   process.exit(1);
 }
 
