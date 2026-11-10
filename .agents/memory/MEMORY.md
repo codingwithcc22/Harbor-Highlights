@@ -1,2 +1,2 @@
 - [Gemini direct API behavior](gemini-direct-api-behavior.md) — Current key works with Gemini 3.8 Flash; keep thinking level low to preserve answer tokens.
-- [First database migration setup](first-database-migration.md) — Empty pnpm-workspace databases use app-owned migrations; resolve migration paths from the server bundle, not its working directory.
+- [Database publishing ownership](first-database-migration.md) — This project's production schema is Publish-managed; startup migration replay caused a duplicate-table crash.
