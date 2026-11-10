@@ -1,5 +1,5 @@
 {
-  "id": "6279ca09-746a-42d8-a5ad-e23c676a219c",
+  "id": "99b44424-2624-46d0-ab22-e16accf55428",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -24,7 +24,8 @@
           "name": "caption",
           "type": "text",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true,
+          "default": "''"
         },
         "mime_type": {
           "name": "mime_type",
@@ -46,7 +47,7 @@
         },
         "created_at": {
           "name": "created_at",
-          "type": "timestamp with time zone",
+          "type": "timestamp",
           "primaryKey": false,
           "notNull": true,
           "default": "now()"

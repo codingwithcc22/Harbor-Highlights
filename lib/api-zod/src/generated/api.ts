@@ -23,7 +23,7 @@ export const HealthCheckResponse = zod.object({
 export const ListDishPhotosResponseItem = zod.object({
   "id": zod.number().int(),
   "title": zod.string(),
-  "caption": zod.string().nullable(),
+  "caption": zod.string(),
   "imageUrl": zod.string(),
   "createdAt": zod.coerce.date()
 })
@@ -50,7 +50,7 @@ export const UploadDishPhotoBody = zod.object({
 export const UploadDishPhotoResponse = zod.object({
   "id": zod.number().int(),
   "title": zod.string(),
-  "caption": zod.string().nullable(),
+  "caption": zod.string(),
   "imageUrl": zod.string(),
   "createdAt": zod.coerce.date()
 })

@@ -172,7 +172,7 @@ components:
         title:
           type: string
         caption:
-          type: [string, "null"]
+          type: string
         imageUrl:
           type: string
         createdAt:

@@ -83,7 +83,7 @@ function parseImageDataUrl(value: string): ImageParseResult {
 function toDishPhotoResponse(item: {
   id: number;
   title: string;
-  caption: string | null;
+  caption: string;
   createdAt: Date;
 }) {
   return {
@@ -143,7 +143,7 @@ router.post("/dishes", async (req, res): Promise<void> => {
       .insert(dishPhotosTable)
       .values({
         title,
-        caption: parsed.data.caption?.trim() || null,
+        caption: parsed.data.caption?.trim() || "",
         mimeType: image.mimeType,
         imageBase64: image.base64,
       })
