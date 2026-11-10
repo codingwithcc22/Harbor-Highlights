@@ -9,6 +9,27 @@ export interface HealthStatus {
   status: string;
 }
 
+export interface DishPhoto {
+  id: number;
+  title: string;
+  /** @nullable */
+  caption: string | null;
+  imageUrl: string;
+  createdAt: string;
+}
+
+export interface DishPhotoInput {
+  /**
+     * @minLength 1
+     * @maxLength 120
+     */
+  title: string;
+  /** @maxLength 500 */
+  caption?: string;
+  /** @maxLength 4194327 */
+  image: string;
+}
+
 export interface CityGuideSystemPrompt {
   prompt: string;
 }

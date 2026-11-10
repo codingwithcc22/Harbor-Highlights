@@ -18,6 +18,58 @@ export const HealthCheckResponse = zod.object({
 
 
 /**
+ * @summary List National Harbor dish photos
+ */
+export const ListDishPhotosResponseItem = zod.object({
+  "id": zod.number().int(),
+  "title": zod.string(),
+  "caption": zod.string().nullable(),
+  "imageUrl": zod.string(),
+  "createdAt": zod.coerce.date()
+})
+export const ListDishPhotosResponse = zod.array(ListDishPhotosResponseItem)
+
+
+/**
+ * @summary Upload a National Harbor dish photo
+ */
+export const uploadDishPhotoBodyTitleMax = 120;
+
+export const uploadDishPhotoBodyCaptionMax = 500;
+
+export const uploadDishPhotoBodyImageMax = 4194327;
+
+
+
+export const UploadDishPhotoBody = zod.object({
+  "title": zod.string().min(1).max(uploadDishPhotoBodyTitleMax),
+  "caption": zod.string().max(uploadDishPhotoBodyCaptionMax).optional(),
+  "image": zod.string().url().max(uploadDishPhotoBodyImageMax)
+})
+
+export const UploadDishPhotoResponse = zod.object({
+  "id": zod.number().int(),
+  "title": zod.string(),
+  "caption": zod.string().nullable(),
+  "imageUrl": zod.string(),
+  "createdAt": zod.coerce.date()
+})
+
+
+/**
+ * @summary Get a dish photo image
+ */
+
+
+
+export const GetDishPhotoImageParams = zod.object({
+  "id": zod.coerce.number().int().min(1)
+})
+
+export const GetDishPhotoImageResponse = zod.unknown()
+
+
+/**
  * @summary Get the city guide system prompt
  */
 export const GetCityGuideSystemPromptResponse = zod.object({

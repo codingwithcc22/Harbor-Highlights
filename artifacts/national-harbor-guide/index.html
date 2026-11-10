@@ -33,6 +33,7 @@
       <a href="#leader">LEADER</a>
       <a href="#state-bird">STATE BIRD</a>
       <a href="#likes">THINGS I LIKE</a>
+      <a href="#dish-gallery">DISH GALLERY</a>
       <a href="#city-guide">CITY GUIDE</a>
     </nav>
 
@@ -137,10 +138,49 @@
         </div>
       </section>
 
+      <section class="dish-gallery-section" id="dish-gallery" aria-labelledby="dish-gallery-title">
+        <div class="dish-gallery-heading">
+          <div>
+            <p class="section-tag">05 &nbsp; / &nbsp; THE COMMUNITY TABLE</p>
+            <h2 id="dish-gallery-title">CRAB CAKE<br><em>ROLL CALL.</em></h2>
+          </div>
+          <p>Found your favorite bite around the Harbor? Add a photo to the album and give the next neighbor a good place to start.</p>
+        </div>
+
+        <div class="dish-gallery-layout">
+          <form class="dish-upload-panel" id="dishUploadForm">
+            <p class="section-tag">ADD YOUR PHOTO</p>
+            <div class="dish-form-field">
+              <label for="dishTitle">Dish title</label>
+              <input id="dishTitle" name="title" type="text" maxlength="120" placeholder="Maryland crab cake" required>
+            </div>
+            <div class="dish-form-field">
+              <label for="dishCaption">A short note <span>optional</span></label>
+              <textarea id="dishCaption" name="caption" maxlength="500" rows="3" placeholder="Where you found it, or what made it good…"></textarea>
+            </div>
+            <div class="dish-form-field">
+              <label for="dishImage">Photo</label>
+              <input id="dishImage" name="image" type="file" accept="image/jpeg,image/png,image/webp" required aria-describedby="dishImageHelp">
+              <p class="dish-image-help" id="dishImageHelp">JPEG, PNG, or WebP · up to 3 MB. We resize photos to 1,280 px before upload.</p>
+            </div>
+            <button class="dish-upload-button" id="dishUploadButton" type="submit">Share with the Harbor <span aria-hidden="true">↗</span></button>
+            <p class="dish-upload-status" id="dishUploadStatus" role="status" aria-live="polite"></p>
+          </form>
+
+          <div class="dish-gallery-area">
+            <div class="dish-gallery-bar">
+              <span>PHOTO ALBUM</span>
+              <span id="dishPhotoCount">Loading photos…</span>
+            </div>
+            <div class="dish-gallery-grid" id="dishGallery" aria-live="polite" aria-relevant="additions"></div>
+          </div>
+        </div>
+      </section>
+
       <section class="city-chat-section" id="city-guide" aria-labelledby="city-guide-title">
         <div class="city-chat-heading">
           <div>
-            <p class="section-tag">05 &nbsp; / &nbsp; YOUR LOCAL LINE</p>
+            <p class="section-tag">06 &nbsp; / &nbsp; YOUR LOCAL LINE</p>
             <h2 id="city-guide-title">Ask the<br><em>Harbor guide.</em></h2>
             <p class="city-chat-intro">A little local perspective on food, the waterfront, and Maryland life. Ask away, neighbor.</p>
           </div>

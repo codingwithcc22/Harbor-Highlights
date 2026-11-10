@@ -233,3 +233,245 @@ if (
     }
   });
 }
+
+// Shared table constants: reject oversize originals, then send a resized copy.
+const MAX_DISH_IMAGE_BYTES = 3 * 1024 * 1024;
+const MAX_DISH_IMAGE_EDGE = 1280;
+const acceptedDishImageTypes = new Set([
+  "image/jpeg",
+  "image/png",
+  "image/webp",
+]);
+
+const dishUploadForm = document.getElementById("dishUploadForm");
+const dishTitleInput = document.getElementById("dishTitle");
+const dishCaptionInput = document.getElementById("dishCaption");
+const dishImageInput = document.getElementById("dishImage");
+const dishUploadButton = document.getElementById("dishUploadButton");
+const dishUploadStatus = document.getElementById("dishUploadStatus");
+const dishGallery = document.getElementById("dishGallery");
+const dishPhotoCount = document.getElementById("dishPhotoCount");
+let dishPhotos = [];
+
+function setDishUploadStatus(message, isError = false) {
+  dishUploadStatus.textContent = message;
+  dishUploadStatus.classList.toggle("is-error", isError);
+}
+
+function updateDishPhotoCount(count) {
+  dishPhotoCount.textContent = `${count} ${count === 1 ? "photo" : "photos"}`;
+}
+
+function createDishPhotoCard(photo) {
+  const card = document.createElement("article");
+  card.className = "dish-photo-card";
+
+  const image = document.createElement("img");
+  image.className = "dish-photo-image";
+  image.src = photo.imageUrl;
+  image.alt = `${photo.title} at National Harbor`;
+  image.loading = "lazy";
+  image.decoding = "async";
+  card.appendChild(image);
+
+  const content = document.createElement("div");
+  content.className = "dish-photo-content";
+
+  const metadata = document.createElement("div");
+  metadata.className = "dish-photo-meta";
+  const date = new Date(photo.createdAt);
+  const time = document.createElement("time");
+  if (!Number.isNaN(date.getTime())) {
+    time.dateTime = date.toISOString();
+    time.textContent = new Intl.DateTimeFormat(undefined, {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    }).format(date);
+  } else {
+    time.textContent = "Recently shared";
+  }
+  metadata.appendChild(time);
+  metadata.appendChild(document.createTextNode("COMMUNITY TABLE"));
+  content.appendChild(metadata);
+
+  const title = document.createElement("h3");
+  title.textContent = photo.title;
+  content.appendChild(title);
+
+  if (photo.caption) {
+    const caption = document.createElement("p");
+    caption.textContent = photo.caption;
+    content.appendChild(caption);
+  }
+
+  card.appendChild(content);
+  return card;
+}
+
+function renderDishPhotos() {
+  dishGallery.replaceChildren();
+  updateDishPhotoCount(dishPhotos.length);
+
+  if (dishPhotos.length === 0) {
+    const empty = document.createElement("p");
+    empty.className = "dish-gallery-empty";
+    empty.textContent = "The album is ready for its first Harbor favorite.";
+    dishGallery.appendChild(empty);
+    return;
+  }
+
+  for (const photo of dishPhotos) {
+    dishGallery.appendChild(createDishPhotoCard(photo));
+  }
+}
+
+function canvasToBlob(canvas, quality) {
+  return new Promise((resolve, reject) => {
+    canvas.toBlob(
+      (blob) => {
+        if (blob) resolve(blob);
+        else reject(new Error("This photo could not be resized. Try another image."));
+      },
+      "image/jpeg",
+      quality,
+    );
+  });
+}
+
+function blobToDataUrl(blob) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (typeof reader.result === "string") resolve(reader.result);
+      else reject(new Error("This photo could not be prepared for upload."));
+    };
+    reader.onerror = () => reject(new Error("This photo could not be read."));
+    reader.readAsDataURL(blob);
+  });
+}
+
+async function resizeDishPhoto(file) {
+  if (!acceptedDishImageTypes.has(file.type)) {
+    throw new Error("Choose a JPEG, PNG, or WebP photo. GIF images are not supported.");
+  }
+  if (file.size > MAX_DISH_IMAGE_BYTES) {
+    throw new Error("This file is over 3 MB. Choose a smaller photo.");
+  }
+  if (typeof createImageBitmap !== "function") {
+    throw new Error("This browser cannot resize the photo. Try a newer browser.");
+  }
+
+  const bitmap = await createImageBitmap(file);
+  try {
+    const longestEdge = Math.max(bitmap.width, bitmap.height);
+    const initialScale = Math.min(1, MAX_DISH_IMAGE_EDGE / longestEdge);
+    const canvas = document.createElement("canvas");
+    const context = canvas.getContext("2d");
+    if (!context) throw new Error("This photo could not be prepared for upload.");
+
+    // JPEG has no transparency, so make transparent PNG areas white.
+    for (const scale of [initialScale, initialScale * 0.8]) {
+      canvas.width = Math.max(1, Math.round(bitmap.width * scale));
+      canvas.height = Math.max(1, Math.round(bitmap.height * scale));
+      context.fillStyle = "#ffffff";
+      context.fillRect(0, 0, canvas.width, canvas.height);
+      context.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+
+      for (const quality of [0.86, 0.76, 0.66]) {
+        const resized = await canvasToBlob(canvas, quality);
+        if (resized.size <= MAX_DISH_IMAGE_BYTES) {
+          return blobToDataUrl(resized);
+        }
+      }
+    }
+  } finally {
+    bitmap.close();
+  }
+
+  throw new Error("This photo is still too large after resizing. Choose another image.");
+}
+
+async function loadDishPhotos() {
+  try {
+    const response = await fetch("/api/dishes");
+    const data = await response.json();
+    if (!response.ok) {
+      throw new Error(data.error || "The photo album could not be loaded.");
+    }
+    dishPhotos = Array.isArray(data) ? data : [];
+    renderDishPhotos();
+  } catch {
+    dishPhotoCount.textContent = "Unavailable";
+    const message = document.createElement("p");
+    message.className = "dish-gallery-empty is-error";
+    message.textContent = "The photo album could not load. Please refresh to try again.";
+    dishGallery.replaceChildren(message);
+  }
+}
+
+if (
+  dishUploadForm &&
+  dishTitleInput &&
+  dishCaptionInput &&
+  dishImageInput &&
+  dishUploadButton &&
+  dishUploadStatus &&
+  dishGallery &&
+  dishPhotoCount
+) {
+  loadDishPhotos();
+
+  dishUploadForm.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const title = dishTitleInput.value.trim();
+    const file = dishImageInput.files?.[0];
+    if (!title) {
+      setDishUploadStatus("Add a short title for your dish photo.", true);
+      dishTitleInput.focus();
+      return;
+    }
+    if (!file) {
+      setDishUploadStatus("Choose a JPEG, PNG, or WebP photo to share.", true);
+      dishImageInput.focus();
+      return;
+    }
+
+    dishUploadButton.disabled = true;
+    dishUploadStatus.setAttribute("aria-live", "polite");
+    setDishUploadStatus("Resizing your photo…");
+
+    try {
+      const image = await resizeDishPhoto(file);
+      setDishUploadStatus("Adding your photo to the album…");
+      const response = await fetch("/api/dishes", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title,
+          caption: dishCaptionInput.value.trim() || undefined,
+          image,
+        }),
+      });
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "The photo could not be saved. Please try again.");
+      }
+
+      dishPhotos = [data, ...dishPhotos.filter((photo) => photo.id !== data.id)];
+      renderDishPhotos();
+      dishUploadForm.reset();
+      setDishUploadStatus("Your photo is in the album. Thanks for sharing!");
+    } catch (error) {
+      setDishUploadStatus(
+        error instanceof Error
+          ? error.message
+          : "The photo could not be saved. Please try again.",
+        true,
+      );
+    } finally {
+      dishUploadButton.disabled = false;
+    }
+  });
+}

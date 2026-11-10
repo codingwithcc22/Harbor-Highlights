@@ -24,6 +24,89 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+  /dishes:
+    get:
+      operationId: listDishPhotos
+      tags: [dishes]
+      summary: List National Harbor dish photos
+      responses:
+        "200":
+          description: Dish photos, newest first
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/DishPhoto"
+    post:
+      operationId: uploadDishPhoto
+      tags: [dishes]
+      summary: Upload a National Harbor dish photo
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DishPhotoInput"
+      responses:
+        "201":
+          description: The saved dish photo
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DishPhoto"
+        "400":
+          description: Invalid title or image data
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "413":
+          description: Image or request is too large
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "415":
+          description: Unsupported image format
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+  /dishes/{id}/image:
+    get:
+      operationId: getDishPhotoImage
+      tags: [dishes]
+      summary: Get a dish photo image
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        "200":
+          description: The original image bytes
+          content:
+            image/jpeg:
+              schema:
+                type: string
+                format: binary
+            image/png:
+              schema:
+                type: string
+                format: binary
+            image/webp:
+              schema:
+                type: string
+                format: binary
+        "404":
+          description: Dish photo not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
   /chat/system-prompt:
     get:
       operationId: getCityGuideSystemPrompt
@@ -81,6 +164,36 @@ components:
           type: string
       required:
         - status
+    DishPhoto:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        caption:
+          type: [string, "null"]
+        imageUrl:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+      required: [id, title, caption, imageUrl, createdAt]
+    DishPhotoInput:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 120
+        caption:
+          type: string
+          maxLength: 500
+        image:
+          type: string
+          format: uri
+          maxLength: 4194327
+      required: [title, image]
     CityGuideSystemPrompt:
       type: object
       properties:
