@@ -77,7 +77,10 @@ router.post("/chat", async (req, res): Promise<void> => {
     .filter((entry) => entry.content.length > 0);
 
   try {
-    const ai = new GoogleGenAI({ apiKey });
+    const ai = new GoogleGenAI({
+      apiKey,
+      httpOptions: { timeout: 30_000 },
+    });
     const generateResponse = () =>
       ai.models.generateContent({
       model,
@@ -125,6 +128,10 @@ router.post("/chat", async (req, res): Promise<void> => {
   } catch (error) {
     // Avoid logging provider messages because they can contain request details.
     const providerStatus = getProviderStatus(error);
+    // The SDK aborts its fetch when the configured request timeout expires.
+    const timedOut =
+      error instanceof Error &&
+      (error.name === "AbortError" || error.name === "TimeoutError");
     req.log.error(
       {
         errorType: error instanceof Error ? error.name : "UnknownError",
@@ -134,7 +141,9 @@ router.post("/chat", async (req, res): Promise<void> => {
       "City guide model request failed",
     );
     const errorMessage =
-      providerStatus === 404
+      timedOut
+        ? "The city guide is taking too long to respond. Please try again."
+        : providerStatus === 404
         ? "The configured Gemini model was not found. Check the GEMINI_MODEL secret."
         : providerStatus === 401 || providerStatus === 403
           ? "Gemini rejected the API key. Check the GEMINI_API_KEY secret."
@@ -143,7 +152,7 @@ router.post("/chat", async (req, res): Promise<void> => {
             : providerStatus === 503
               ? "Gemini is temporarily unavailable. Please try again shortly."
             : "The city guide could not reach Gemini. Please try again.";
-    res.status(502).json({ error: errorMessage });
+    res.status(timedOut ? 504 : 502).json({ error: errorMessage });
   }
 });
 
